@@ -7,16 +7,16 @@
 //
 
 #include "FaceX.hpp"
-#include "FaceTrack.hpp"
+#include "FaceTrack/FaceTrack.hpp"
 #include <iostream>
 
 int main(int argc, const char * argv[]) {
 	bool ret = false;
 	char key = '\0';
-	
+
 	FaceTrack track;
-	ret = track.load(RES_FACEX + "face.mytracker");		if (!ret) return -1;
-	
+//	ret = track.load(RES_FACEX + "face.mytracker");		if (!ret) return -1;
+
 	cv::VideoCapture cap;
 	cap.open(0);		if (!cap.isOpened()) return -1;
 	int m1 = 640, m2 = 480;
@@ -28,23 +28,35 @@ int main(int argc, const char * argv[]) {
 	cv::Mat f, g, h, w;
 	cv::Rect face;
 	cv::Mat shape;
-	int health;
+	int score;
 	
 	do {
+		cv::Scalar color = COLOR_0000FF;
 		ret = cap.read(f);		if (!ret) continue;
 		cv::cvtColor(f, g, cv::COLOR_BGR2GRAY);
-		equalizeHist(g, g);
-		h = g(roi);
 		w = f.clone();
 		
-		track.track(g, shape, health);
-		std::cout << health << std::endl;
-		if (health >= 1) {
-			track.show(w, shape, health);
-		}
+		ret = track.detect(g, face);		if (!ret) continue;
+		ret = track.shape(g, face, shape, score);		if (!ret) continue;
+		
+		FaceX::show_rect(w, face, color);
+		FaceX::show_points(w, shape, color);
 		cv::imshow("facex", w);
 		key = cv::waitKey(5);
-	} while (key != 'q');
+	} while (key < '2');
+	
+	do {
+		cv::Scalar color = COLOR_00FF00;
+		ret = cap.read(f);		if (!ret) continue;
+		cv::cvtColor(f, g, cv::COLOR_BGR2GRAY);
+		w = f.clone();
+		
+		ret = track.track(g, shape, score);		if (!ret) continue;
+		
+		FaceX::show_points(w, shape, color);
+		cv::imshow("facex", w);
+		key = cv::waitKey(5);
+	} while (key < '3');
 	
 	cap.release();
 	

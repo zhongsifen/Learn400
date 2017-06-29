@@ -6,11 +6,15 @@
 //
 //
 
-#include "FaceDetect.hpp"
+#include "FaceX.hpp"
+#include "FaceDetect/FaceDetect.hpp"
 #include <iostream>
 using namespace cv;
 
 int main(int argc, const char * argv[]) {
+	bool ret = false;
+	char key = '\0';
+	
 	VideoCapture vide;
 	vide.open(0);		if (!vide.isOpened()) return -1;
 	int m1 = 640;
@@ -20,34 +24,30 @@ int main(int argc, const char * argv[]) {
 	const int n1 = 288;
 	const int n2 = 288;
 	Rect roi(Point((m1 - n1) / 2, (m2 - n2) / 2), Size(n1, n2));
-	Mat f, g, h;
+	Mat f, g, h, w;
 	Rect face;
-	
-	bool ret;
-	char key;
+	Rect head;
 	
 	FaceDetect detect;
-	ret = detect.load(RES_FACEX + "haarcascade_frontalface_alt.xml");		if (!ret) return -1;
 	do {
 		vide.read(f);
 		
 		cvtColor(f, g, COLOR_BGR2GRAY);
-		equalizeHist(g, g);
-		Mat h = g(roi);
-		ret = detect.detect(h, face);
+		w = f.clone();
+		
+//		ret = detect.detect_roi(g, roi, face);
+		ret = detect.detect(g, face, head);
 		
 		if (ret) {
-			face.x += roi.x;
-			face.y += roi.y;
-
-			rectangle(f, roi, Scalar(0x00, 0xFF, 0x00));
-			rectangle(f, face, Scalar(0xFF, 0x00, 0x00));
+			FaceX::show_rect(w, face, COLOR_0000FF);
+			FaceX::show_rect(w, head, COLOR_00FF00);
+			std::cout << face << std::endl;
 		}
 		else {
-			rectangle(f, roi, Scalar(0x00, 0x00, 0xFF));
+			FaceX::show_rect(w, roi, COLOR_FF0000);
 		}
 		
-		imshow("facex", f);
+		imshow("facex", w);
 		key = waitKey(5);
 		if (key == 'v') {
 			std::cout << face.size() << std::endl;

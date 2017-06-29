@@ -19,10 +19,9 @@
 
 #ifndef _AVATAR_myAvatar_h_
 #define _AVATAR_myAvatar_h_
-#include "Avatar.hpp"
-#include "Warp.hpp"
-#include "ShapeModel.hpp"
-namespace AVATAR {
+#include "FaceTrack/Warp.hpp"
+#include "FaceTrack/ShapeModel.hpp"
+#include "FaceTrack/CLM.hpp"
 	//============================================================================
 	/**
 	 Kernel Ridge Regression
@@ -90,8 +89,9 @@ namespace AVATAR {
 		cv::Mat plocal_, pglobl_, shape_, R_, Ri_;
 	};
 	//============================================================================
-	class myAvatar : public Avatar{
+	class myAvatar {
 	public:
+		cv::Mat _shape; /**< Current avatar's shape */
 		struct pupil{         /**< Pupil info structure                   */
 			double rad;                 /**< Pupil radius                           */
 			double px;                  /**< x-coord in frontal gaze                */
@@ -124,27 +124,6 @@ namespace AVATAR {
 		cv::Mat _ocav_tri;            /**< Oral cavity triangulation              */
 		ShapeExpMap _gen;             /**< expression generator                   */
 		
-		myAvatar(){ ; }
-		myAvatar(std::string fname, bool binary = false) { this->Load(fname, binary); }
-		
-		bool
-		Animate(cv::Mat &draw,      //rgb image to draw on
-				cv::Mat &image,     //rgb image of user
-				cv::Mat &shape,     //user's facial shape
-				void* params = NULL); //additional parameters
-		bool
-		Initialise(cv::Mat& im,
-				   cv::Mat& shape,
-				   void* params = NULL);
-		void
-		Read(std::ifstream &s,      //file stream to read from
-			 bool readType = true); //read type?
-		void
-		ReadBinary(std::ifstream &s,      //file stream to read from
-				   bool readType = true); //read type?
-		void
-		Write(std::ofstream &s, bool binary = false);  //file stream to write to
-		
 		int numberOfAvatars() const;
 		void setAvatar(int index);
 		
@@ -161,8 +140,8 @@ namespace AVATAR {
 		void AddAvatar(cv::Mat &image,
 					   cv::Mat &points,
 					   cv::Mat &eyes);
-		
-	private:
+
+	protected:
 		cv::Mat plocal_, pglobl_, textr_, img_, gray_, p_, s3D_, epts_, grayImg_;
 		cv::Mat gplocal_, gpglobl_, opts1_, opts2_; std::vector<cv::Mat> rgb_;
 		double dx0_, dy0_;
@@ -252,22 +231,5 @@ namespace AVATAR {
 		
 	};
 	//============================================================================
-	class myAvatarParams{
-	public:
-		int type;           /**< Type of parameters          */
-		bool animate_rigid; /**< Animate head pose motion?   */
-		bool animate_exprs; /**< Animate facial expressions? */
-		bool avatar_shape;  /**< User avatar's shape?        */
-		bool oral_cavity;   /**< Do oral cavity replacement? */
-		bool animate_textr; /**< Animate texture change?     */
-		bool animate_eyes;  /**< Animate eyes?               */
-		double alpha;       /**< Generic vs specific weight  */
-		
-		myAvatarParams();
-		myAvatarParams(const char* fname, bool binary = false) { this->Load(fname, binary); }
-		void Save(const char* fname, bool binary = false);
-		void Load(const char* fname, bool binary = false);
-	};
-	//============================================================================
-}
+
 #endif
