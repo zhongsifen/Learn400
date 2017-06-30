@@ -16,7 +16,7 @@
             startingLineNumber = "430"
             endingLineNumber = "430"
             landmarkName = "myFaceTracker::Track(cv::Mat &amp;im)"
-            landmarkType = "5">
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -32,7 +32,7 @@
             startingLineNumber = "365"
             endingLineNumber = "365"
             landmarkName = "myFaceTracker::Track(cv::Mat &amp;im)"
-            landmarkType = "5">
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
